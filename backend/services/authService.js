@@ -12,13 +12,22 @@ const registerUser = async ({ name, email, password }) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
+  try {
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
 
-  return user;
+    return user;
+  } catch (err) {
+    if (err.code === 11000) {
+      const error = new Error('Email already in use');
+      error.statusCode = 409;
+      throw error;
+    }
+    throw err;
+  }
 };
 
 const loginUser = async ({ email, password }) => {
