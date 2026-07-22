@@ -1,4 +1,5 @@
 const { registerUser, loginUser } = require('../services/authService');
+const logger = require('../config/logger');
 
 const isValidString = (value) => typeof value === 'string' && value.trim().length > 0;
 
@@ -17,6 +18,8 @@ const signup = async (req, res, next) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     const user = await registerUser({ name: name.trim(), email: normalizedEmail, password });
+
+    logger.info({ userId: user._id, email: user.email }, 'New user registered');
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -38,6 +41,8 @@ const login = async (req, res, next) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     const { user, token } = await loginUser({ email: normalizedEmail, password });
+
+    logger.info({ userId: user._id, email: user.email }, 'User logged in');
 
     res.status(200).json({
       message: 'Login successful',
