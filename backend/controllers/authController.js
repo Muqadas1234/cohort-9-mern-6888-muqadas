@@ -1,14 +1,22 @@
 const { registerUser, loginUser } = require('../services/authService');
 
+const isValidString = (value) => typeof value === 'string' && value.trim().length > 0;
+
 const signup = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!isValidString(name) || !isValidString(email) || !isValidString(password)) {
       return res.status(400).json({ message: 'Name, email, and password are required' });
     }
 
-    const user = await registerUser({ name, email, password });
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await registerUser({ name: name.trim(), email: normalizedEmail, password });
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -23,11 +31,13 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (!isValidString(email) || !isValidString(password)) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    const { user, token } = await loginUser({ email, password });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const { user, token } = await loginUser({ email: normalizedEmail, password });
 
     res.status(200).json({
       message: 'Login successful',
