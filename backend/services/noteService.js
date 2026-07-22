@@ -1,4 +1,13 @@
+const mongoose = require('mongoose');
 const Note = require('../models/Note');
+
+const validateNoteId = (noteId) => {
+  if (!mongoose.Types.ObjectId.isValid(noteId)) {
+    const error = new Error('Invalid note ID');
+    error.statusCode = 400;
+    throw error;
+  }
+};
 
 const createNote = async ({ title, content, userId }) => {
   const note = await Note.create({ title, content, user: userId });
@@ -11,6 +20,8 @@ const getUserNotes = async (userId) => {
 };
 
 const getNoteById = async (noteId, userId) => {
+  validateNoteId(noteId);
+
   const note = await Note.findOne({ _id: noteId, user: userId });
   if (!note) {
     const error = new Error('Note not found');
@@ -21,6 +32,8 @@ const getNoteById = async (noteId, userId) => {
 };
 
 const updateNote = async (noteId, userId, { title, content }) => {
+  validateNoteId(noteId);
+
   const note = await Note.findOneAndUpdate(
     { _id: noteId, user: userId },
     { title, content },
@@ -35,6 +48,8 @@ const updateNote = async (noteId, userId, { title, content }) => {
 };
 
 const deleteNote = async (noteId, userId) => {
+  validateNoteId(noteId);
+
   const note = await Note.findOneAndDelete({ _id: noteId, user: userId });
   if (!note) {
     const error = new Error('Note not found');
