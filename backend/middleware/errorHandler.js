@@ -1,5 +1,7 @@
+const logger = require('../config/logger');
+
 const errorHandler = (err, req, res, next) => {
-  console.error(err.message);
+  logger.error({ err }, err.message);
 
   const statusCode =
     Number.isInteger(err.statusCode) && err.statusCode >= 400 && err.statusCode < 500
