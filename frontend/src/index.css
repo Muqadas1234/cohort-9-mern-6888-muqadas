@@ -108,7 +108,11 @@ body {
   gap: 1rem;
 }
 
-.user-badge {
+.profile-menu-container {
+  position: relative;
+}
+
+.user-badge-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -116,9 +120,17 @@ body {
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
   border: 1px solid var(--border-color);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.user-badge .avatar {
+.user-badge-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.user-badge-btn .avatar {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -131,9 +143,77 @@ body {
   font-weight: 700;
 }
 
-.user-badge .username {
+.user-badge-btn .username {
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+.user-badge-btn .arrow {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 210px;
+  background: #1e293b;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-user-info {
+  padding: 0.25rem 0.5rem;
+}
+
+.dropdown-user-info .user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.dropdown-user-info .user-email {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0.6rem 0;
+}
+
+.dropdown-item.logout-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 /* Dashboard Layout */
