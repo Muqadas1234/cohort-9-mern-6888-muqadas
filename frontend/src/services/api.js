@@ -1,0 +1,62 @@
+const API_BASE_URL = 'http://localhost:5000/api';
+
+const getHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
+
+export const apiRequest = async (endpoint, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      ...getHeaders(),
+      ...options.headers,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(data.message || 'Something went wrong');
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+};
+
+// Auth API Calls
+export const signupUser = (name, email, password) =>
+  apiRequest('/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify({ name, email, password }),
+  });
+
+export const loginUser = (email, password) =>
+  apiRequest('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+
+// Notes API Calls
+export const fetchNotes = () => apiRequest('/notes');
+
+export const createNoteApi = (title, content) =>
+  apiRequest('/notes', {
+    method: 'POST',
+    body: JSON.stringify({ title, content }),
+  });
+
+export const updateNoteApi = (id, title, content) =>
+  apiRequest(`/notes/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ title, content }),
+  });
+
+export const deleteNoteApi = (id) =>
+  apiRequest(`/notes/${id}`, {
+    method: 'DELETE',
+  });
