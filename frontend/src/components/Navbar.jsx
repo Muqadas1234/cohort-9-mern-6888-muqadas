@@ -10,6 +10,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal }) => {
         <div className="navbar-brand">
           <span className="logo-icon">📝</span>
           <span className="brand-title">NotesApp</span>
+          <span className="dashboard-badge">Dashboard</span>
         </div>
 
         <div className="navbar-search">

@@ -68,6 +68,18 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.dashboard-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 0.2rem 0.65rem;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .navbar-search {
   flex: 1;
   max-width: 450px;
