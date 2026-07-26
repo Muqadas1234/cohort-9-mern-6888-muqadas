@@ -9,23 +9,28 @@ const getHeaders = () => {
 };
 
 export const apiRequest = async (endpoint, options = {}) => {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      ...getHeaders(),
-      ...options.headers,
-    },
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        ...getHeaders(),
+        ...options.headers,
+      },
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (!response.ok) {
-    const error = new Error(data.message || 'Something went wrong');
-    error.status = response.status;
-    throw error;
+    if (!response.ok) {
+      const error = new Error(data.message || 'Something went wrong');
+      error.status = response.status;
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    if (err.status) throw err;
+    throw new Error(err.message || 'Network or server communication failure');
   }
-
-  return data;
 };
 
 // Auth API Calls
