@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const NoteCard = ({ note, onEdit, onDelete }) => {
   const formatDate = (dateString) => {
     if (!dateString) return '';
