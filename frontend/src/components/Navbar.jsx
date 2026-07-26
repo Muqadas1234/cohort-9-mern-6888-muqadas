@@ -29,6 +29,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal }) => {
         <div className="navbar-search">
           <input
             type="text"
+            aria-label="Search notes by title or content"
             placeholder="Search notes by title or content..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
