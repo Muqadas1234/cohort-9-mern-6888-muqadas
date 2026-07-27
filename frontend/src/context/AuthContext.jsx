@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
-  // Save session upon successful login
+  // Save session upon successful login (JWT stored in localStorage for SPA bearer auth header)
   const login = (newToken, userData) => {
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(userData));
