@@ -7,6 +7,7 @@ const {
 } = require('../services/noteService');
 const logger = require('../config/logger');
 
+// Create new note controller
 const create = async (req, res, next) => {
   try {
     const { title, content } = req.body;
@@ -23,6 +24,7 @@ const create = async (req, res, next) => {
   }
 };
 
+// Retrieve user notes list controller
 const getAll = async (req, res, next) => {
   try {
     const notes = await getUserNotes(req.userId);
@@ -32,6 +34,7 @@ const getAll = async (req, res, next) => {
   }
 };
 
+// Retrieve single note details controller
 const getOne = async (req, res, next) => {
   try {
     const note = await getNoteById(req.params.id, req.userId);
@@ -41,6 +44,7 @@ const getOne = async (req, res, next) => {
   }
 };
 
+// Update existing note controller
 const update = async (req, res, next) => {
   try {
     const { title, content } = req.body;
@@ -52,6 +56,7 @@ const update = async (req, res, next) => {
   }
 };
 
+// Delete note controller
 const remove = async (req, res, next) => {
   try {
     await deleteNote(req.params.id, req.userId);
