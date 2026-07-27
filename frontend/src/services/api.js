@@ -1,5 +1,7 @@
+// Base API URL configuration for backend proxy
 const API_BASE_URL = '/api';
 
+// Helper to construct request headers with authorization JWT token
 const getHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -8,6 +10,7 @@ const getHeaders = () => {
   };
 };
 
+// Generic fetch wrapper with error response handling
 export const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -33,7 +36,7 @@ export const apiRequest = async (endpoint, options = {}) => {
   }
 };
 
-// Auth API Calls
+// Authentication Endpoints
 export const signupUser = (name, email, password) =>
   apiRequest('/auth/signup', {
     method: 'POST',
@@ -46,7 +49,7 @@ export const loginUser = (email, password) =>
     body: JSON.stringify({ email, password }),
   });
 
-// Notes API Calls
+// Notes CRUD Endpoints
 export const fetchNotes = () => apiRequest('/notes');
 
 export const createNoteApi = (title, content) =>
