@@ -19,7 +19,7 @@ const signup = async (req, res, next) => {
 
     const user = await registerUser({ name: name.trim(), email: normalizedEmail, password });
 
-    logger.info({ userId: user._id, email: user.email }, 'New user registered');
+    logger.info({ userId: user._id }, 'New user registered');
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -42,7 +42,7 @@ const login = async (req, res, next) => {
 
     const { user, token } = await loginUser({ email: normalizedEmail, password });
 
-    logger.info({ userId: user._id, email: user.email }, 'User logged in');
+    logger.info({ userId: user._id }, 'User logged in');
 
     res.status(200).json({
       message: 'Login successful',
