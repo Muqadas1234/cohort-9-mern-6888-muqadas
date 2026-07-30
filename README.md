@@ -1,50 +1,53 @@
-# Notes App — Full Stack MERN Application
+# Notes App
 
-A full-stack Notes Application built with Node.js, Express, MongoDB Atlas, and React (Vite). It enables users to register, log in, and manage their personal notes securely.
+A full-stack web application built using Node.js, Express, MongoDB Atlas, and React with Vite that allows registered users to create, search, edit, and delete personal notes securely.
 
-## Features
+## Tech Stack
 
-- **User Authentication**: Signup and login with bcrypt password hashing and JWT token authorization.
-- **Notes Management**: Create, read, update, and delete user-scoped notes with real-time title and content search filtering.
-- **User Interface**: Responsive React single-page app with sticky navigation bar, user profile dropdown menu, and modal dialogs.
-- **Logging & Error Handling**: Pino HTTP request/error logger and centralized Express error handling middleware.
-- **Unit Testing**: Mocha and Chai backend test suite (15 unit tests passing with 98.57% code coverage).
+Frontend: React 19, Vite, Vanilla CSS, AuthContext
+Backend: Node.js, Express.js, MongoDB Atlas
+Authentication: JWT, bcrypt
+Logging: Pino Logger
+Testing: Mocha and Chai for backend unit tests
 
-## Project Structure
+## Project Layout
 
-```
-cohort-9-mern-6888-muqadas/
-├── backend/            # Express server, MongoDB models, auth & note controllers, tests
-└── frontend/           # React 19 + Vite application, AuthContext, components, pages
-```
+The repository is divided into two main folders:
 
-## Getting Started (Local Execution)
+- backend: Contains Express server configuration, Mongoose schemas, controllers, authentication middleware, Pino logging, and Mocha unit tests.
+- frontend: Contains React 19 single-page application, login and signup forms, Notes dashboard, search filtering, modals, and API service integration.
+
+## Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- npm
 
-### 1. Run the Backend Server
-```bash
+Make sure Node.js (version 18 or higher) and npm are installed on your machine.
+
+### Running Backend Server
+
+Navigate to the backend directory, install dependencies, and start the server:
+
 cd backend
 npm install
 npm start
-```
-The server will start on `http://localhost:5000`.
 
-### 2. Run the Frontend Application
-In a new terminal window:
-```bash
+The backend API server will run on http://localhost:5000.
+
+### Running Frontend Application
+
+In a separate terminal window, navigate to the frontend directory, install dependencies, and start the development server:
+
 cd frontend
 npm install
 npm run dev
-```
-Open `http://localhost:5173` in your web browser.
 
-## Running Tests
+The application will be accessible in your browser at http://localhost:5173.
 
-To execute the backend unit test suite with coverage:
-```bash
+## Unit Testing
+
+To run the backend unit tests and generate the coverage report:
+
 cd backend
 npm test
-```
+
+This executes 15 Mocha unit tests covering authentication and note services.
