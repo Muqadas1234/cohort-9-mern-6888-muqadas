@@ -1,5 +1,7 @@
 // Dependencies and environment configuration
+const http = require('http');
 const express = require('express');
+const { Server } = require('socket.io');
 require('dotenv').config();
 const pinoHttp = require('pino-http');
 const logger = require('./config/logger');
@@ -15,10 +17,32 @@ if (!process.env.JWT_SECRET) {
 }
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.IO real-time server
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  },
+});
+
+io.on('connection', (socket) => {
+  logger.info({ socketId: socket.id }, 'Client connected to real-time socket');
+  socket.on('disconnect', () => {
+    logger.info({ socketId: socket.id }, 'Client disconnected from real-time socket');
+  });
+});
 
 // Express middleware setup
 app.use(express.json());
 app.use(pinoHttp({ logger }));
+
+// Inject Socket.IO into Express request pipeline
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 // API route registrations
 app.use('/api/auth', authRoutes);
@@ -38,7 +62,7 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT}`);
     });
   } catch (error) {

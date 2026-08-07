@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { io } from 'socket.io-client';
 import { Navbar } from '../components/Navbar';
 import { NoteCard } from '../components/NoteCard';
 import { NoteModal } from '../components/NoteModal';
@@ -11,6 +12,8 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const fileInputRef = useRef(null);
+
   // Modal states
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
@@ -20,22 +23,55 @@ export const Dashboard = () => {
   const [deletingNote, setDeletingNote] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Fetch Notes on Component Mount
-  const loadNotes = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const data = await fetchNotes();
-      setNotes(data.notes || []);
-    } catch (err) {
-      setError(err.message || 'Failed to load notes');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadNotes();
+    let isMounted = true;
+
+    // Load initial notes asynchronously on mount
+    fetchNotes()
+      .then((data) => {
+        if (isMounted) {
+          setNotes(data.notes || []);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setError(err.message || 'Failed to load notes');
+          setLoading(false);
+        }
+      });
+
+    // Initialize Socket.IO real-time listener
+    const socket = io('http://localhost:5000', {
+      transports: ['websocket', 'polling'],
+    });
+
+    // Real-time Note Created Event with duplicate prevention
+    socket.on('note:created', (newNote) => {
+      setNotes((prev) => {
+        if (prev.some((n) => n._id === newNote._id)) {
+          return prev;
+        }
+        return [newNote, ...prev];
+      });
+    });
+
+    // Real-time Note Updated Event
+    socket.on('note:updated', (updatedNote) => {
+      setNotes((prev) =>
+        prev.map((n) => (n._id === updatedNote._id ? updatedNote : n))
+      );
+    });
+
+    // Real-time Note Deleted Event
+    socket.on('note:deleted', (deletedId) => {
+      setNotes((prev) => prev.filter((n) => n._id !== deletedId));
+    });
+
+    return () => {
+      isMounted = false;
+      socket.disconnect();
+    };
   }, []);
 
   // Filter Notes based on Search Query
@@ -49,7 +85,7 @@ export const Dashboard = () => {
     );
   }, [notes, search]);
 
-  // Create or Update Note Handler
+  // Create or Update Note Handler with deduplication
   const handleSaveNote = async ({ title, content }) => {
     try {
       setSavingLoading(true);
@@ -60,7 +96,12 @@ export const Dashboard = () => {
         );
       } else {
         const res = await createNoteApi(title, content);
-        setNotes((prev) => [res.note, ...prev]);
+        setNotes((prev) => {
+          if (prev.some((n) => n._id === res.note._id)) {
+            return prev;
+          }
+          return [res.note, ...prev];
+        });
       }
       setIsNoteModalOpen(false);
       setEditingNote(null);
@@ -87,8 +128,62 @@ export const Dashboard = () => {
     }
   };
 
+  // Export Notes to JSON file
+  const handleExportJSON = () => {
+    if (notes.length === 0) {
+      alert('No notes available to export.');
+      return;
+    }
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(notes, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `notes-backup-${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  // Import Notes from JSON file
+  const handleImportJSON = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const importedNotes = JSON.parse(text);
+
+      if (!Array.isArray(importedNotes)) {
+        throw new Error('Invalid JSON format. Expected an array of notes.');
+      }
+
+      setLoading(true);
+      for (const item of importedNotes) {
+        if (item.title) {
+          await createNoteApi(item.title, item.content || '');
+        }
+      }
+      const data = await fetchNotes();
+      setNotes(data.notes || []);
+      alert('Notes imported successfully!');
+    } catch (err) {
+      alert('Import failed: ' + err.message);
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="dashboard-layout">
+      {/* Hidden file picker input for JSON import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleImportJSON}
+        accept=".json"
+        style={{ display: 'none' }}
+      />
+
       <Navbar
         search={search}
         setSearch={setSearch}
@@ -96,6 +191,8 @@ export const Dashboard = () => {
           setEditingNote(null);
           setIsNoteModalOpen(true);
         }}
+        onExportJSON={handleExportJSON}
+        onImportClick={() => fileInputRef.current?.click()}
       />
 
       <main className="dashboard-content">
