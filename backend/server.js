@@ -19,7 +19,7 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 const server = http.createServer(app);
 
-// Initialize Socket.IO real-time server
+// Initialize Socket.IO real-time server with user room isolation
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -28,7 +28,14 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  logger.info({ socketId: socket.id }, 'Client connected to real-time socket');
+  const userId = socket.handshake.query?.userId;
+  if (userId) {
+    socket.join(String(userId));
+    logger.info({ socketId: socket.id, userId }, 'User joined private socket room');
+  } else {
+    logger.info({ socketId: socket.id }, 'Anonymous socket connection');
+  }
+
   socket.on('disconnect', () => {
     logger.info({ socketId: socket.id }, 'Client disconnected from real-time socket');
   });

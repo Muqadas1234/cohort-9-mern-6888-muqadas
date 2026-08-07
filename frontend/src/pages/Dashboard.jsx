@@ -41,8 +41,13 @@ export const Dashboard = () => {
         }
       });
 
-    // Initialize Socket.IO real-time listener
+    const userStr = localStorage.getItem('user');
+    const userObj = userStr ? JSON.parse(userStr) : null;
+    const currentUserId = userObj?.id || userObj?._id;
+
+    // Initialize Socket.IO real-time listener with user room isolation
     const socket = io('http://localhost:5000', {
+      query: { userId: currentUserId || '' },
       transports: ['websocket', 'polling'],
     });
 

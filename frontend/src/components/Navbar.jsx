@@ -49,6 +49,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal, onExportJSON, onI
               className="tools-menu-btn"
               onClick={() => setIsToolsOpen((prev) => !prev)}
               aria-label="Tools Menu"
+              aria-expanded={isToolsOpen}
             >
               <span>Tools</span>
               <span className="arrow">{isToolsOpen ? '▲' : '▼'}</span>
@@ -95,6 +96,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal, onExportJSON, onI
               className="user-badge-btn"
               onClick={() => setIsProfileOpen((prev) => !prev)}
               aria-label="User Profile Menu"
+              aria-expanded={isProfileOpen}
             >
               <span className="avatar">{user?.name ? user.name[0].toUpperCase() : 'U'}</span>
               <span className="username">{user?.name || 'User'}</span>

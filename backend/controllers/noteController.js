@@ -7,7 +7,7 @@ const {
 } = require('../services/noteService');
 const logger = require('../config/logger');
 
-// Create new note controller with real-time socket emit
+// Create new note controller with isolated user socket emit
 const create = async (req, res, next) => {
   try {
     const { title, content } = req.body;
@@ -19,9 +19,9 @@ const create = async (req, res, next) => {
     const note = await createNote({ title, content, userId: req.userId });
     logger.info({ userId: req.userId, noteId: note._id }, 'Note created');
 
-    // Broadcast live event to connected clients
+    // Broadcast live event specifically to the note owner's private room
     if (req.io) {
-      req.io.emit('note:created', note);
+      req.io.to(String(req.userId)).emit('note:created', note);
     }
 
     res.status(201).json({ message: 'Note created successfully', note });
@@ -50,16 +50,16 @@ const getOne = async (req, res, next) => {
   }
 };
 
-// Update existing note controller with real-time socket emit
+// Update existing note controller with isolated user socket emit
 const update = async (req, res, next) => {
   try {
     const { title, content } = req.body;
     const note = await updateNote(req.params.id, req.userId, { title, content });
     logger.info({ userId: req.userId, noteId: note._id }, 'Note updated');
 
-    // Broadcast live update event to connected clients
+    // Broadcast live update event specifically to the note owner's private room
     if (req.io) {
-      req.io.emit('note:updated', note);
+      req.io.to(String(req.userId)).emit('note:updated', note);
     }
 
     res.status(200).json({ message: 'Note updated successfully', note });
@@ -68,15 +68,15 @@ const update = async (req, res, next) => {
   }
 };
 
-// Delete note controller with real-time socket emit
+// Delete note controller with isolated user socket emit
 const remove = async (req, res, next) => {
   try {
     await deleteNote(req.params.id, req.userId);
     logger.info({ userId: req.userId, noteId: req.params.id }, 'Note deleted');
 
-    // Broadcast live delete event to connected clients
+    // Broadcast live delete event specifically to the note owner's private room
     if (req.io) {
-      req.io.emit('note:deleted', req.params.id);
+      req.io.to(String(req.userId)).emit('note:deleted', req.params.id);
     }
 
     res.status(200).json({ message: 'Note deleted successfully' });
