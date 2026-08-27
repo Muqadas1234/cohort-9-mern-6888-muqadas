@@ -5,10 +5,16 @@ A full-stack web application built using Node.js, Express, MongoDB Atlas, and Re
 ## Tech Stack
 
 Frontend: React 19, Vite, Vanilla CSS, AuthContext
-Backend: Node.js, Express.js, MongoDB Atlas
+Backend: Node.js, Express.js, MongoDB Atlas, Socket.IO
 Authentication: JWT, bcrypt
 Logging: Pino Logger
 Testing: Mocha and Chai for backend unit tests
+
+## Additional Features
+
+- Real-Time Updates: Live notes creation, update, and deletion sync across multiple tabs using Socket.IO.
+- Export and Import: Backup notes to a JSON file and restore notes directly from JSON file.
+- Search and Filter: Real-time title and content filtering in the top navbar.
 
 ## Project Layout
 
