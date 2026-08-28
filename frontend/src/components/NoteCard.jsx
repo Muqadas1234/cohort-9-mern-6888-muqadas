@@ -9,22 +9,19 @@ export const NoteCard = ({ note, onEdit, onDelete }) => {
     });
   };
 
-  // Render formatted rich text safely
-  const renderFormattedContent = (content) => {
-    if (!content) return 'No content provided.';
-    return { __html: content.replace(/\n/g, '<br/>') };
-  };
-
   return (
     <div className="note-card">
       <div className="note-card-header">
-        <h3 className="note-title">{note.title}</h3>
+        <h3
+          className="note-title"
+          dangerouslySetInnerHTML={{ __html: note.title || 'Untitled Note' }}
+        />
         <span className="note-date">{formatDate(note.createdAt)}</span>
       </div>
 
       <div
         className="note-content"
-        dangerouslySetInnerHTML={renderFormattedContent(note.content)}
+        dangerouslySetInnerHTML={{ __html: note.content || 'No content provided.' }}
       />
 
       <div className="note-card-actions">
