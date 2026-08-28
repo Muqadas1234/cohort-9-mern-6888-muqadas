@@ -9,6 +9,12 @@ export const NoteCard = ({ note, onEdit, onDelete }) => {
     });
   };
 
+  // Render formatted rich text safely
+  const renderFormattedContent = (content) => {
+    if (!content) return 'No content provided.';
+    return { __html: content.replace(/\n/g, '<br/>') };
+  };
+
   return (
     <div className="note-card">
       <div className="note-card-header">
@@ -16,7 +22,10 @@ export const NoteCard = ({ note, onEdit, onDelete }) => {
         <span className="note-date">{formatDate(note.createdAt)}</span>
       </div>
 
-      <p className="note-content">{note.content || 'No content provided.'}</p>
+      <div
+        className="note-content"
+        dangerouslySetInnerHTML={renderFormattedContent(note.content)}
+      />
 
       <div className="note-card-actions">
         <button className="icon-btn edit" onClick={() => onEdit(note)} title="Edit Note">
