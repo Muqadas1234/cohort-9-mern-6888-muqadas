@@ -9,6 +9,7 @@ A full-stack MERN web application built using Node.js, Express, MongoDB Atlas, a
 - **Custom Typography & Emojis**: 22 selectable Google Font families, 7 list styles (Bullets, Squares, Numbers, Upper/Lower Roman, Upper/Lower Alpha), and 120+ categorized emojis.
 - **Real-Time Synchronization**: Socket.IO integration with private user room isolation (`socket.join(userId)`) for live multi-tab updates.
 - **Data Management**: Full JSON Export and Import backup capabilities via the Navbar Tools menu.
+- **Search & Filter**: In-memory 1ms instant search bar filtering.
 - **Unit Testing & CI/CD**: 15 Mocha & Chai unit tests achieving 98.57% test coverage with SonarQube CI integration.
 
 ## Tech Stack
