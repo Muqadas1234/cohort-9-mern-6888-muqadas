@@ -20,6 +20,12 @@ A full-stack MERN web application built using Node.js, Express, MongoDB Atlas, a
 - **Logging**: Pino Logger
 - **Testing**: Mocha, Chai, NYC (Istanbul) for unit test coverage
 
+## Additional Features
+
+- **Real-Time Updates**: Live notes creation, update, and deletion sync across multiple tabs using Socket.IO.
+- **Export and Import**: Backup notes to a JSON file and restore notes directly from JSON file.
+- **Search and Filter**: Real-time title and content filtering in the top navbar.
+
 ## Project Layout
 
 The repository is divided into two main folders:

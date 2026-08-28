@@ -1,16 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-export const Navbar = ({ search, setSearch, onOpenCreateModal }) => {
+export const Navbar = ({ search, setSearch, onOpenCreateModal, onExportJSON, onImportClick }) => {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
 
-  // Close dropdown when clicking outside
+  const dropdownRef = useRef(null);
+  const toolsRef = useRef(null);
+
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsProfileOpen(false);
+      }
+      if (toolsRef.current && !toolsRef.current.contains(e.target)) {
+        setIsToolsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -37,6 +43,50 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal }) => {
         </div>
 
         <div className="navbar-actions">
+          {/* Tools Menu for Backup & Restore */}
+          <div className="profile-menu-container" ref={toolsRef}>
+            <button
+              className="tools-menu-btn"
+              onClick={() => setIsToolsOpen((prev) => !prev)}
+              aria-label="Tools Menu"
+              aria-expanded={isToolsOpen}
+            >
+              <span>Tools</span>
+              <span className="arrow">{isToolsOpen ? '▲' : '▼'}</span>
+            </button>
+
+            {isToolsOpen && (
+              <div className="profile-dropdown tools-dropdown">
+                <div className="dropdown-section-label">Data Management</div>
+                <button
+                  className="tool-action-btn"
+                  onClick={() => {
+                    setIsToolsOpen(false);
+                    onImportClick();
+                  }}
+                >
+                  <div className="tool-btn-text">
+                    <span className="tool-btn-title">Import JSON</span>
+                    <span className="tool-btn-desc">Restore notes from backup</span>
+                  </div>
+                </button>
+
+                <button
+                  className="tool-action-btn"
+                  onClick={() => {
+                    setIsToolsOpen(false);
+                    onExportJSON();
+                  }}
+                >
+                  <div className="tool-btn-text">
+                    <span className="tool-btn-title">Export JSON</span>
+                    <span className="tool-btn-desc">Save notes to local file</span>
+                  </div>
+                </button>
+              </div>
+            )}
+          </div>
+
           <button className="btn primary small" onClick={onOpenCreateModal}>
             + New Note
           </button>
@@ -46,6 +96,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal }) => {
               className="user-badge-btn"
               onClick={() => setIsProfileOpen((prev) => !prev)}
               aria-label="User Profile Menu"
+              aria-expanded={isProfileOpen}
             >
               <span className="avatar">{user?.name ? user.name[0].toUpperCase() : 'U'}</span>
               <span className="username">{user?.name || 'User'}</span>
@@ -66,7 +117,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal }) => {
                     logout();
                   }}
                 >
-                  🚪 Logout
+                  Logout
                 </button>
               </div>
             )}

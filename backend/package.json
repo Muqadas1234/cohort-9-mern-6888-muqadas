@@ -7,9 +7,20 @@
     "test": "nyc mocha test/**/*.test.js"
   },
   "nyc": {
-    "reporter": ["lcov", "text"],
-    "include": ["services/**", "controllers/**", "middleware/**", "config/**"],
-    "exclude": ["test/**", "node_modules/**"]
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "include": [
+      "services/**",
+      "controllers/**",
+      "middleware/**",
+      "config/**"
+    ],
+    "exclude": [
+      "test/**",
+      "node_modules/**"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -21,7 +32,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.8.0",
     "pino": "^10.3.1",
-    "pino-http": "^11.0.0"
+    "pino-http": "^11.0.0",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "chai": "^6.2.2",
