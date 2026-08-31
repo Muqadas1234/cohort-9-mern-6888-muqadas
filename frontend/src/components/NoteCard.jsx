@@ -12,11 +12,17 @@ export const NoteCard = ({ note, onEdit, onDelete }) => {
   return (
     <div className="note-card">
       <div className="note-card-header">
-        <h3 className="note-title">{note.title}</h3>
+        <h3
+          className="note-title"
+          dangerouslySetInnerHTML={{ __html: note.title || 'Untitled Note' }}
+        />
         <span className="note-date">{formatDate(note.createdAt)}</span>
       </div>
 
-      <p className="note-content">{note.content || 'No content provided.'}</p>
+      <div
+        className="note-content"
+        dangerouslySetInnerHTML={{ __html: note.content || 'No content provided.' }}
+      />
 
       <div className="note-card-actions">
         <button className="icon-btn edit" onClick={() => onEdit(note)} title="Edit Note">

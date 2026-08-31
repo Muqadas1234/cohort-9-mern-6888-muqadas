@@ -28,8 +28,10 @@ export const Signup = ({ onSwitchToLogin }) => {
       setLoading(true);
       await signupUser(name, email, password);
       // Auto login after successful signup
-      const loginRes = await loginUser(email, password);
-      login(loginRes.token, loginRes.user);
+      //const loginRes = await loginUser(email, password);
+      //login(loginRes.token, loginRes.user);
+      alert('Account created successfully! Please log in.');
+      onSwitchToLogin();
     } catch (err) {
       setError(err.message || 'Failed to create account');
     } finally {
