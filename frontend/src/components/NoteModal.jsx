@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => {
   const [error, setError] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [fontColor, setFontColor] = useState('#8b5cf6'); // Default MS Word style color bar
 
   const titleEditorRef = useRef(null);
   const contentEditorRef = useRef(null);
@@ -36,15 +37,10 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
 
   // Smiling & Laughing Emojis FIRST at the top
   const fullEmojiCollection = [
-    // 1. Smiling, Laughing & Happy Faces FIRST
     '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😋', '😛', '😜', '🤪', '🤓', '😎', '🤩', '🥳', '🧐', '🤐', '🤨', '🥱', '😴', '🤯', '😭', '😱',
-    // 2. Ticks, Stars & Badges
     '✅', '✔️', '☑️', '❌', '❎', '⭕', '🟢', '🔴', '🟡', '🔵', '🟣', '📌', '📍', '⭐', '🌟', '✨', '💫', '🌠', '❇️', '✴️', '💥', '⚡', '🔥', '🏆', '🥇', '🥈', '🥉', '🎯', '🚀',
-    // 3. Hands & Gestures
     '👍', '👎', '👏', '🙌', '👐', '🤝', '👊', '✊', '🤛', '🤜', '🤞', '✌️', '🤟', '🤘', '🤙', '🖐️',
-    // 4. Hearts & Emotions
     '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖',
-    // 5. Productivity & Work
     '📝', '💡', '🎓', '💻', '🖥️', '📁', '📂', '📑', '📅', '📊', '📈', '📉', '📜', '⚙️', '🔑', '🔒', '🎨', '🎉', '🎁', '🏷️', '💬', '📢', '⏰', '⌛', '☀️', '🌙', '🌈', '☘️', '☕', '🎂', '🍕', '🚗'
   ];
 
@@ -88,6 +84,32 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
       activeRef.current.focus();
       document.execCommand(command, false, value);
     }
+  };
+
+  // Dedicated Font Color Applier (Changes both text AND list numbers/bullets color)
+  const applyTextColor = (colorHex) => {
+    const activeRef = lastActiveRef.current === 'title' ? titleEditorRef : contentEditorRef;
+    if (!activeRef.current) return;
+    activeRef.current.focus();
+
+    // 1. Apply color to selected text
+    document.execCommand('foreColor', false, colorHex);
+
+    // 2. Apply color directly to parent <li> / <ol> / <ul> so numbers, bullets, and markers change color
+    setTimeout(() => {
+      const sel = window.getSelection();
+      if (sel && sel.anchorNode) {
+        let node = sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement;
+        const liElem = node?.closest('li');
+        if (liElem) {
+          liElem.style.setProperty('color', colorHex, 'important');
+        }
+        const listElem = node?.closest('ol, ul');
+        if (listElem) {
+          listElem.style.setProperty('color', colorHex, 'important');
+        }
+      }
+    }, 0);
   };
 
   // Dynamic List Style Switcher
@@ -170,9 +192,19 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
 
   return (
     <div className="modal-backdrop">
-      <div className="modal-card" style={{ maxWidth: '880px', overflow: 'visible', position: 'relative' }}>
-        <div className="modal-header">
-          <h2>{editingNote ? 'Edit Note' : 'Create New Note'}</h2>
+      {/* Dead Center Modal Card - 100% Pixel Equal Top and Bottom Gap */}
+      <div
+        className="modal-card"
+        style={{
+          maxWidth: '780px',
+          overflow: 'visible',
+          margin: '0',
+          position: 'relative',
+          padding: '1.4rem 1.75rem',
+        }}
+      >
+        <div className="modal-header" style={{ marginBottom: '0.85rem' }}>
+          <h2 style={{ fontSize: '1.25rem' }}>{editingNote ? 'Edit Note' : 'Create New Note'}</h2>
           <button className="close-btn" onClick={onClose} disabled={loading}>
             ✕
           </button>
@@ -190,10 +222,10 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
               flexWrap: 'nowrap',
               gap: '4px',
               padding: '0.45rem 0.65rem',
-              background: 'rgba(30, 41, 59, 0.95)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '8px',
-              marginBottom: '1rem',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              borderRadius: '12px',
+              marginBottom: '0.85rem',
               position: 'relative',
             }}
           >
@@ -220,7 +252,7 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
                 if (e.target.value) applyListStyle(e.target.value);
               }}
               defaultValue=""
-              style={{ ...selectStyle, maxWidth: '135px' }}
+              style={{ ...selectStyle, maxWidth: '130px' }}
               title="List Styles"
             >
               <option value="" disabled>☰ Lists...</option>
@@ -232,6 +264,50 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
               <option value="upper-alpha">A. Alpha (A, B, C)</option>
               <option value="lower-alpha">a. Alpha (a, b, c)</option>
             </select>
+
+            <span style={dividerStyle} />
+
+            {/* MS Word Style Font Color Button (A with Color Bar) */}
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+              <input
+                id="font-color-picker"
+                type="color"
+                value={fontColor}
+                onChange={(e) => {
+                  const newColor = e.target.value;
+                  setFontColor(newColor);
+                  applyTextColor(newColor);
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  opacity: 0,
+                  cursor: 'pointer',
+                  zIndex: 2,
+                }}
+                title="Font Color (Changes text & list numbers color)"
+              />
+              <button
+                type="button"
+                style={{
+                  ...compactBtnStyle,
+                  display: 'inline-flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0.2rem 0.6rem',
+                  gap: '1px',
+                  pointerEvents: 'none',
+                }}
+                title="Font Color (MS Word Style)"
+              >
+                <span style={{ fontWeight: '800', fontSize: '0.9rem', color: '#0f172a', lineHeight: '1' }}>A</span>
+                <span style={{ width: '14px', height: '3px', background: fontColor, borderRadius: '2px' }} />
+              </button>
+            </div>
 
             <span style={dividerStyle} />
 
@@ -278,8 +354,9 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
                 onClick={() => setShowEmojiPicker((prev) => !prev)}
                 style={{
                   ...compactBtnStyle,
-                  background: showEmojiPicker ? 'rgba(99, 102, 241, 0.3)' : compactBtnStyle.background,
-                  borderColor: showEmojiPicker ? 'var(--primary-color)' : compactBtnStyle.borderColor,
+                  background: showEmojiPicker ? '#f3e8ff' : compactBtnStyle.background,
+                  borderColor: showEmojiPicker ? '#8b5cf6' : compactBtnStyle.borderColor,
+                  color: showEmojiPicker ? '#7c3aed' : compactBtnStyle.color,
                   whiteSpace: 'nowrap',
                 }}
                 title="Insert Emoji"
@@ -287,7 +364,7 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
                 😀 Emoji
               </button>
 
-              {/* Inline Attached Dropdown Panel (Opens directly under button) */}
+              {/* Inline Attached Light Dropdown Panel */}
               {showEmojiPicker && (
                 <div
                   style={{
@@ -299,12 +376,12 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
                     gridTemplateColumns: 'repeat(6, 1fr)',
                     gap: '4px',
                     padding: '0.6rem',
-                    background: '#1e293b',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '10px',
-                    boxShadow: '0 15px 30px rgba(0,0,0,0.6)',
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    boxShadow: '0 15px 35px rgba(0,0,0,0.12)',
                     width: '270px',
-                    maxHeight: '220px',
+                    maxHeight: '200px',
                     overflowY: 'auto',
                   }}
                 >
@@ -314,13 +391,13 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
                       type="button"
                       onClick={() => insertEmoji(emoji)}
                       style={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        border: 'none',
-                        borderRadius: '4px',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '6px',
                         fontSize: '1.2rem',
                         padding: '0.35rem',
                         cursor: 'pointer',
-                        transition: 'transform 0.1s ease',
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       {emoji}
@@ -332,52 +409,51 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
           </div>
 
           {/* Rich Title Input */}
-          <div className="form-group">
-            <label htmlFor="note-title">Title (Rich Text & Fonts)</label>
+          <div className="form-group" style={{ marginBottom: '0.85rem' }}>
+            <label htmlFor="note-title" style={{ fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>Title</label>
             <div
               ref={titleEditorRef}
               contentEditable
               suppressContentEditableWarning
               onFocus={() => { lastActiveRef.current = 'title'; }}
               style={{
-                padding: '0.65rem 1rem',
-                background: 'rgba(15, 23, 42, 0.6)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                color: 'var(--text-main)',
-                fontSize: '1.1rem',
+                padding: '0.6rem 0.9rem',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                color: '#0f172a',
+                fontSize: '1.05rem',
                 fontWeight: '600',
                 outline: 'none',
-                minHeight: '42px',
+                minHeight: '40px',
               }}
             />
           </div>
 
-          {/* Rich Content Input */}
-          <div className="form-group">
-            <label htmlFor="note-content">Content (Rich Text & Fonts)</label>
+          {/* Rich Content Input - ZERO SCROLLBARS */}
+          <div className="form-group" style={{ marginBottom: '1rem' }}>
+            <label htmlFor="note-content" style={{ fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>Content</label>
             <div
               ref={contentEditorRef}
               contentEditable
               suppressContentEditableWarning
               onFocus={() => { lastActiveRef.current = 'content'; }}
               style={{
-                minHeight: '160px',
-                maxHeight: '300px',
-                overflowY: 'auto',
-                padding: '0.85rem 1rem',
-                background: 'rgba(15, 23, 42, 0.6)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '8px',
-                color: 'var(--text-main)',
+                minHeight: '140px',
+                padding: '0.75rem 0.9rem',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                color: '#0f172a',
                 fontSize: '0.95rem',
-                lineHeight: '1.6',
+                lineHeight: '1.5',
                 outline: 'none',
+                overflow: 'visible',
               }}
             />
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer" style={{ marginTop: '0.85rem' }}>
             <button type="button" className="btn outline" onClick={onClose} disabled={loading}>
               Cancel
             </button>
@@ -393,11 +469,12 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
 
 const selectStyle = {
   padding: '0.25rem 0.45rem',
-  borderRadius: '6px',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  background: '#1e293b',
-  color: '#fff',
+  borderRadius: '8px',
+  border: '1px solid #cbd5e1',
+  background: '#ffffff',
+  color: '#0f172a',
   fontSize: '0.8rem',
+  fontWeight: '500',
   cursor: 'pointer',
   outline: 'none',
   height: '28px',
@@ -405,10 +482,10 @@ const selectStyle = {
 
 const compactBtnStyle = {
   padding: '0.25rem 0.5rem',
-  borderRadius: '6px',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  background: 'rgba(255, 255, 255, 0.08)',
-  color: '#fff',
+  borderRadius: '8px',
+  border: '1px solid #cbd5e1',
+  background: '#ffffff',
+  color: '#1e293b',
   fontSize: '0.8rem',
   cursor: 'pointer',
   height: '28px',
@@ -422,7 +499,7 @@ const compactBtnStyle = {
 const dividerStyle = {
   width: '1px',
   height: '18px',
-  background: 'rgba(255, 255, 255, 0.12)',
+  background: '#cbd5e1',
   margin: '0 1px',
   alignSelf: 'center',
   flexShrink: 0,
