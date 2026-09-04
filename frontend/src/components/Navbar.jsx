@@ -43,7 +43,7 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal, onExportJSON, onI
         </div>
 
         <div className="navbar-actions">
-          {/* Tools Menu for Backup & Restore */}
+          {/* Ultra-Modern Tools Menu for Backup & Restore */}
           <div className="profile-menu-container" ref={toolsRef}>
             <button
               className="tools-menu-btn"
@@ -51,38 +51,51 @@ export const Navbar = ({ search, setSearch, onOpenCreateModal, onExportJSON, onI
               aria-label="Tools Menu"
               aria-expanded={isToolsOpen}
             >
+              <span style={{ fontSize: '1rem' }}>⚙️</span>
               <span>Tools</span>
               <span className="arrow">{isToolsOpen ? '▲' : '▼'}</span>
             </button>
 
             {isToolsOpen && (
               <div className="profile-dropdown tools-dropdown">
-                <div className="dropdown-section-label">Data Management</div>
-                <button
-                  className="tool-action-btn"
-                  onClick={() => {
-                    setIsToolsOpen(false);
-                    onImportClick();
-                  }}
-                >
-                  <div className="tool-btn-text">
-                    <span className="tool-btn-title">Import JSON</span>
-                    <span className="tool-btn-desc">Restore notes from backup</span>
-                  </div>
-                </button>
+                <div className="dropdown-section-header">
+                  <span className="dropdown-section-icon">📦</span>
+                  <span className="dropdown-section-label">Data Management</span>
+                </div>
 
-                <button
-                  className="tool-action-btn"
-                  onClick={() => {
-                    setIsToolsOpen(false);
-                    onExportJSON();
-                  }}
-                >
-                  <div className="tool-btn-text">
-                    <span className="tool-btn-title">Export JSON</span>
-                    <span className="tool-btn-desc">Save notes to local file</span>
-                  </div>
-                </button>
+                <div className="dropdown-items-group">
+                  <button
+                    className="tool-action-btn"
+                    onClick={() => {
+                      setIsToolsOpen(false);
+                      onImportClick();
+                    }}
+                  >
+                    <div className="tool-icon-wrapper import">
+                      📥
+                    </div>
+                    <div className="tool-btn-text">
+                      <span className="tool-btn-title">Import JSON</span>
+                      <span className="tool-btn-desc">Restore notes from backup file</span>
+                    </div>
+                  </button>
+
+                  <button
+                    className="tool-action-btn"
+                    onClick={() => {
+                      setIsToolsOpen(false);
+                      onExportJSON();
+                    }}
+                  >
+                    <div className="tool-icon-wrapper export">
+                      📤
+                    </div>
+                    <div className="tool-btn-text">
+                      <span className="tool-btn-title">Export JSON</span>
+                      <span className="tool-btn-desc">Save notes to local JSON file</span>
+                    </div>
+                  </button>
+                </div>
               </div>
             )}
           </div>
