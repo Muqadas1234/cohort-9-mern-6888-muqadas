@@ -18,10 +18,6 @@ export const Login = ({ onSwitchToSignup }) => {
 
   useEffect(() => {
     let titleIdx = 0;
-    setDisplayedTitle('');
-    setDisplayedDesc('');
-    setTypingStep('title');
-
     let descTimer = null;
     let pauseTimer = null;
 

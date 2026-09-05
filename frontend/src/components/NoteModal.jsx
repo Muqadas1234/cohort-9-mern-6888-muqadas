@@ -60,8 +60,6 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
         contentEditorRef.current.innerHTML = '';
       }
     }
-    setError('');
-    setShowEmojiPicker(false);
   }, [editingNote, isOpen]);
 
   // Close emoji dropdown when clicking outside
@@ -177,6 +175,12 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
     setShowEmojiPicker(false);
   };
 
+  const handleClose = () => {
+    setError('');
+    setShowEmojiPicker(false);
+    onClose();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const titleHtml = titleEditorRef.current ? titleEditorRef.current.innerHTML.trim() : '';
@@ -192,20 +196,10 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
 
   return (
     <div className="modal-backdrop">
-      {/* Dead Center Modal Card - 100% Pixel Equal Top and Bottom Gap */}
-      <div
-        className="modal-card"
-        style={{
-          maxWidth: '780px',
-          overflow: 'visible',
-          margin: '0',
-          position: 'relative',
-          padding: '1.4rem 1.75rem',
-        }}
-      >
+      <div className="modal-card">
         <div className="modal-header" style={{ marginBottom: '0.85rem' }}>
           <h2 style={{ fontSize: '1.25rem' }}>{editingNote ? 'Edit Note' : 'Create New Note'}</h2>
-          <button className="close-btn" onClick={onClose} disabled={loading}>
+          <button className="close-btn" onClick={handleClose} disabled={loading}>
             ✕
           </button>
         </div>
@@ -454,7 +448,7 @@ export const NoteModal = ({ isOpen, onClose, onSave, editingNote, loading }) => 
           </div>
 
           <div className="modal-footer" style={{ marginTop: '0.85rem' }}>
-            <button type="button" className="btn outline" onClick={onClose} disabled={loading}>
+            <button type="button" className="btn outline" onClick={handleClose} disabled={loading}>
               Cancel
             </button>
             <button type="submit" className="btn primary" disabled={loading}>
