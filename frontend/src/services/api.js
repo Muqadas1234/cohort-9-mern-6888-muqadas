@@ -1,5 +1,7 @@
-// Base API URL configuration for backend proxy
-const API_BASE_URL = '/api';
+// Base API URL configuration for backend proxy or production environment
+const API_BASE_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
 
 // Helper to construct request headers with authorization JWT token
 const getHeaders = () => {

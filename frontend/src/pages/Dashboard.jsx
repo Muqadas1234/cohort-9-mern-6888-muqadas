@@ -45,8 +45,9 @@ export const Dashboard = () => {
     const userObj = userStr ? JSON.parse(userStr) : null;
     const currentUserId = userObj?.id || userObj?._id;
 
-    // Initialize Socket.IO real-time listener with user room isolation
-    const socket = io('http://localhost:5000', {
+    // Initialize Socket.IO real-time listener with dynamic backend URL
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const socket = io(backendUrl, {
       query: { userId: currentUserId || '' },
       transports: ['websocket', 'polling'],
     });

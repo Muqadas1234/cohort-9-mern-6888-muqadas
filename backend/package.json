@@ -4,6 +4,7 @@
   "description": "Notes App backend",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "nyc mocha test/**/*.test.js"
   },
   "nyc": {
